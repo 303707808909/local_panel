@@ -1,4 +1,4 @@
-
+﻿
 
 <!DOCTYPE html>
 <html>
@@ -19,8 +19,21 @@
             font-family: 'Indie Flower', cursive;
         }
 
+        strong {
+            font-family: 'Indie Flower', cursive;
+        }
+
         input {
             margin-bottom: 5px;
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        textarea {
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        button {
+            font-family: 'Source Code Pro', monospace;
         }
 
         #main-elements {
@@ -110,7 +123,9 @@
             };
 
 
-
+            if (localStorage.getItem("showWelcomeModal") === null || localStorage.getItem("showWelcomeModal") == "true") {
+                $('#welcomeModal').modal('show');
+            }
 
             $('#btn-new-note').on('click', function () {
                 $('#new_note_title').val('');
@@ -309,6 +324,34 @@
 
     <script>
     $(document).ready(function () {
+        $('#welcomeModalDismiss').on('click', function () {
+            localStorage.setItem("showWelcomeModal", "false");
+            $('#welcomeModal').modal('hide');
+        });
+    });
+    </script>
+    <div class="modal" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabelLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="welcomeModalLabelLabel">Welcome.</h5>
+                </div>
+                <div class="modal-body">
+                    <p><strong>local_panel</strong> is an easy and simple to use application, to help you keep your notes, memos, tasks, links, anything important.</p>
+                    <p>No account required, nothing is saved in a database, everything is kept local to the device you are using. (<a href="#">Read more on this</a>)</p>
+                    <p>Safe and secure, your data is entirely contained to your device.</p>
+                    <p>This also works offline!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="welcomeModalDismiss">OK, Get Started <i class="bi bi-check-circle"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    $(document).ready(function () {
         $('#modal-btn-save-note').on('click', function () {
             var new_note_form_object = $("#new-note-form").serializeObject();
             localPanelData.notesArray.push(new_note_form_object);
@@ -489,9 +532,6 @@
             </div>
         </div>
     </div>
-
-
-
 
 
 </body>
