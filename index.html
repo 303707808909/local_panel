@@ -1,0 +1,498 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>local_panel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js" integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Indie Flower', cursive;
+        }
+
+        input {
+            margin-bottom: 5px;
+        }
+
+        #main-elements {
+            margin: 15px;
+        }
+
+        .note-card {
+            max-width: 18rem;
+        }
+
+        .card-bottom {
+            text-align: right;
+        }
+
+        .note-delete {
+            cursor: pointer;
+        }
+
+        .todo-delete {
+            cursor: pointer;
+        }
+
+        .link-delete {
+            cursor: pointer;
+        }
+
+        h4 {
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        h5 {
+            font-family: 'Source Code Pro', monospace;
+        }
+
+        p {
+            font-family: 'Source Code Pro', monospace;
+        }
+    </style>
+    <script>
+        var localPanelData;
+
+        //localStorage.removeItem("localPanelData");
+        if (localStorage.getItem("localPanelData") === null) {
+            console.log("Key doesn't exist, initializing data.");
+            var notesArray = [];
+            var todosArray = [];
+            var linksArray = [];
+            var listsArray = [];
+            var localPanelInitData = {
+                'notesArray': notesArray,
+                'todosArray': todosArray,
+                'linksArray': linksArray,
+                'listsArray': listsArray
+            };
+            localPanelData = localPanelInitData;
+            localStorage.setItem("localPanelData", JSON.stringify(localPanelInitData));
+        } else {
+            console.log("Key exist, loading data.");
+            localPanelData = JSON.parse(localStorage.getItem("localPanelData"));
+        }
+
+        console.log(localPanelData);
+
+        $(document).ready(function () {
+            if (typeof (Storage) !== "undefined") {
+                console.log('Web Storage support all good');
+            } else {
+                console.log('Sorry! No Web Storage support..');
+                $('#notSupportedModal').modal('show');
+            }
+
+            $.fn.serializeObject = function () { //to serialize form to json
+                var o = {};
+                var a = this.serializeArray();
+                $.each(a, function () {
+                    if (o[this.name]) {
+                        if (!o[this.name].push) {
+                            o[this.name] = [o[this.name]];
+                        }
+                        o[this.name].push(this.value || '');
+                    } else {
+                        o[this.name] = this.value || '';
+                    }
+                });
+                return o;
+            };
+
+
+
+
+            $('#btn-new-note').on('click', function () {
+                $('#new_note_title').val('');
+                $('#new_note_content').val('');
+                $('#newNoteModal').modal('show');
+            });
+            $('#btn-new-todo').on('click', function () {
+                $('#newTodoModal').modal('show');
+            });
+            $('#btn-new-link').on('click', function () {
+                $('#newLinkModal').modal('show');
+            });
+            $('#btn-new-list').on('click', function () {
+                $('#newListModal').modal('show');
+            });
+        });
+        function render_main_elements() {
+            render_notes();
+            render_todos();
+            render_links();
+        }
+        function render_notes() {
+            $('#notes-div').text('');
+            $('#notes-div').append("<h4>Notes:</h4>");
+            $.each(localPanelData.notesArray, function (index) {
+                //console.log(this);
+                //console.log(index);
+                $('#notes-div').append(
+                        $('<div>').attr('class', 'card border-success mb-3 note-card').append(
+                            $('<div>').attr('class', 'card-body text-success').append(
+                                $('<h5>').attr('class', 'card-title').append(
+                                    this.new_note_title
+                                )
+                            ).append(
+                                $('<p>').attr('class', 'card-text').append(
+                                    this.new_note_content
+                                )
+                            )
+                            .append(
+                                $('<p>').attr('class', 'card-bottom').append(
+                                    '<i class="bi-trash note-delete" alt="Delete Note" data-note-index="' + index + '"></i>'
+                                )
+                            )
+                        )
+                );
+            });
+            $('.note-delete').on('click', function () {
+                var note_index = $(this).data("note-index");
+                localPanelData.notesArray.splice(note_index, 1);
+                localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
+                render_main_elements();
+                //console.log(localPanelData.notesArray);
+            });
+        }
+        function render_todos() {
+            $('#todos-div').text('');
+            $('#todos-div').append("<h4>To do:</h4>");
+            $.each(localPanelData.todosArray, function (index) {
+                //console.log(this);
+                //console.log(index);
+                var priority_text = "";
+                if (this.todo_priority == "1") {
+                    priority_text = "<span class=\"text-muted\">Low</span>";
+                }
+                if (this.todo_priority == "2") {
+                    priority_text = "<span class=\"text-success\">Normal</span>";
+                }
+                if (this.todo_priority == "3") {
+                    priority_text = "<span class=\"text-danger\">High</span>";
+                }
+                $('#todos-div').append(
+                        $('<div>').attr('class', 'card border-success mb-3 note-card').append(
+                            $('<div>').attr('class', 'card-body text-success').append(
+                                $('<h5>').attr('class', 'card-title').append(
+                                    this.new_todo_title
+                                )
+                            ).append(
+                                $('<p>').attr('class', 'card-text').append(
+                                    this.new_todo_content
+                                )
+                            )
+                            .append(
+                                $('<p>').attr('class', 'card-text').append(
+                                    'Priority: ' + priority_text
+                                )
+                            )
+                            .append(
+                                $('<p>').attr('class', 'card-bottom').append(
+                                    '<i class="bi-trash todo-delete" alt="Delete Todo" data-todo-index="' + index + '"></i>'
+                                )
+                            )
+                        )
+                );
+            });
+            $('.todo-delete').on('click', function () {
+                var todo_index = $(this).data("todo-index");
+                localPanelData.todosArray.splice(todo_index, 1);
+                localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
+                render_main_elements();
+                //console.log(localPanelData.notesArray);
+            });
+        }
+        function render_links() {
+            $('#links-div').text('');
+            $('#links-div').append("<h4>Links:</h4>");
+            $.each(localPanelData.linksArray, function (index) {
+                //console.log(this);
+                //console.log(index);
+                $('#links-div').append(
+                        $('<div>').attr('class', 'card border-success mb-3 note-card').append(
+                            $('<div>').attr('class', 'card-body text-success').append(
+                                $('<h5>').attr('class', 'card-title').append(
+                                    $('<a>').attr('href', this.new_link_url).attr('target', '_blank').append(
+                                        this.new_link_title
+                                    )
+                                )
+                            ).append(
+                                $('<p>').attr('class', 'card-text').append(
+                                    this.new_link_description
+                                )
+                            )
+                            .append(
+                                $('<p>').attr('class', 'card-bottom').append(
+                                    '<i class="bi-trash link-delete" alt="Delete Link" data-link-index="' + index + '"></i>'
+                                )
+                            )
+                        )
+                );
+            });
+            $('.link-delete').on('click', function () {
+                var link_index = $(this).data("link-index");
+                localPanelData.linksArray.splice(link_index, 1);
+                localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
+                render_main_elements();
+                //console.log(localPanelData.notesArray);
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="navbar navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <a href="#" class="navbar-brand d-flex align-items-center">
+
+                    <strong>local_panel</strong>&nbsp;
+
+                </a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container-fluid text-center" style="margin-top:25px;">
+            <h5>New:</h5>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-outline-success" id="btn-new-note">Note</button>
+                <button type="button" class="btn btn-outline-success" id="btn-new-todo">To-do</button>
+                <button type="button" class="btn btn-outline-success" id="btn-new-link">Link</button>
+
+            </div>
+        </div>
+        <div id="main-elements" class="row">
+            <script>
+                $(document).ready(function () {
+                    console.log('rendering main elements');
+                    console.log('rendering notes');
+                    render_main_elements();
+                });
+            </script>
+            <div id="notes-div" class="col-lg-4 col-sm-12">
+
+            </div>
+            <div id="todos-div" class="col-lg-4 col-sm-12">
+
+            </div>
+            <div id="links-div" class="col-lg-4 col-sm-12">
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal" id="notSupportedModal" tabindex="-1" aria-labelledby="notSupportedModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notSupportedModalLabel">Your Browser is not supported.</h5>
+                </div>
+                <div class="modal-body">
+                    Sorry your browser is not supported. You need a modern browser with LocalStorage support.
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    $(document).ready(function () {
+        $('#modal-btn-save-note').on('click', function () {
+            var new_note_form_object = $("#new-note-form").serializeObject();
+            localPanelData.notesArray.push(new_note_form_object);
+            localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
+            $('#newNoteModal').modal('hide');
+            console.log(localPanelData);
+            render_main_elements();
+        });
+    });
+    </script>
+    <div class="modal" id="newNoteModal" tabindex="-1" aria-labelledby="newNoteModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newNoteModalLabel">New Note</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="new-note-form">
+                        <div id="new_note_modal_div_form">
+                            <div class="form-row">
+                                <div class="form-group" style="width:100%">
+                                    <input type="text" style="width:100%" class="form-control" name="new_note_title" id="new_note_title" placeholder="Title">
+                                </div>
+                                <div class="form-group" style="width:100%">
+                                    <textarea class="form-control" name="new_note_content" id="new_note_content" placeholder="Content"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="modal-btn-save-note">Save New Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    $(document).ready(function () {
+        //add task slider input
+        var slider = document.getElementById("todo_priority");
+        var output = document.getElementById("slider_status");
+        //output.innerHTML = slider.value; // Display the default slider value
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function () {
+            $("#slider_status").removeClass();
+            var slider_value = this.value;
+            if (slider_value == 1) {
+                $("#slider_status").addClass("text-muted");
+                $("#slider_status").text("low");
+            }
+            if (slider_value == 2) {
+                $("#slider_status").addClass("text-success");
+                $("#slider_status").text("normal");
+            }
+            if (slider_value == 3) {
+                $("#slider_status").addClass("text-danger");
+                $("#slider_status").text("high");
+            }
+        }
+
+        $('#modal-btn-save-todo').on('click', function () {
+            var new_todo_form_object = $("#new-todo-form").serializeObject();
+            localPanelData.todosArray.push(new_todo_form_object);
+            localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
+            $('#newTodoModal').modal('hide');
+            console.log(localPanelData);
+            render_main_elements();
+        });
+    });
+    </script>
+    <div class="modal" id="newTodoModal" tabindex="-1" aria-labelledby="newTodoModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newTodoModalLabel">New Todo</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="new-todo-form">
+                        <div id="new_todo_modal_div_form">
+                            <div class="form-row">
+                                <div class="form-group" style="width:100%">
+                                    <input type="text" style="width:100%" class="form-control" name="new_todo_title" id="new_todo_title" placeholder="Title">
+                                </div>
+                                <div class="form-group" style="width:100%">
+                                    <textarea class="form-control" name="new_todo_content" id="new_todo_content" placeholder="To do"></textarea>
+                                </div>
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label for="todo_priority">Priority: </label>
+                                    <input type="range" min="1" max="3" value="2" step="1" class="slider" id="todo_priority" name="todo_priority">
+                                    <span style="padding-left:10px;" class="text-success" id="slider_status">normal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="modal-btn-save-todo">Save New Todo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    $(document).ready(function () {
+        $('#modal-btn-save-link').on('click', function () {
+            var new_link_form_object = $("#new-link-form").serializeObject();
+            localPanelData.linksArray.push(new_link_form_object);
+            localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
+            $('#newLinkModal').modal('hide');
+            console.log(localPanelData);
+            render_main_elements();
+        });
+    });
+    </script>
+    <div class="modal" id="newLinkModal" tabindex="-1" aria-labelledby="newLinkModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newLinkModalLabel">New Link</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="new-link-form">
+                        <div id="new_link_modal_div_form">
+                            <div class="form-row">
+                                <div class="form-group" style="width:100%">
+                                    <input type="text" style="width:100%" class="form-control" name="new_link_title" id="new_link_title" placeholder="Title">
+                                </div>
+                                <div class="form-group" style="width:100%">
+                                    <input type="text" style="width:100%" class="form-control" name="new_link_url" id="new_link_url" placeholder="Url">
+                                </div>
+                                <div class="form-group" style="width:100%">
+                                    <textarea class="form-control" name="new_link_description" id="new_link_description" placeholder="Description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="modal-btn-save-link">Save New Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal" id="newListModal" tabindex="-1" aria-labelledby="newListModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newListModalLabel">New List</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="new-list-form">
+                        <div id="new_list_modal_div_form">
+                            <div class="form-row">
+                                <div class="form-group" style="width:100%">
+                                    <input type="text" style="width:100%" class="form-control" name="new_list_title" id="new_list_title" placeholder="Title">
+                                </div>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Item" name="new_item" id="new_item" style="margin-bottom:0px;">
+                                    <button class="btn btn-outline-success" type="button" id="btn-add-to-list">Add to List</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Save New List</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</body>
+</html>
