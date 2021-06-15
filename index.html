@@ -133,9 +133,14 @@
                 $('#newNoteModal').modal('show');
             });
             $('#btn-new-todo').on('click', function () {
+                $('#new_todo_title').val('');
+                $('#new_todo_content').val('');
                 $('#newTodoModal').modal('show');
             });
             $('#btn-new-link').on('click', function () {
+                $('#new_link_title').val('');
+                $('#new_link_url').val('');
+                $('#new_link_description').val('');
                 $('#newLinkModal').modal('show');
             });
             $('#btn-new-list').on('click', function () {
