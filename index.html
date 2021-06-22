@@ -1,6 +1,4 @@
-﻿
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -93,12 +91,21 @@
         if (localStorage.getItem("localPanelData") === null) {
             console.log("Key doesn't exist, initializing data.");
             var notesArray = [];
-            var todosArray = [];
+
+            var todosHighArray = [];
+            var todosNormalArray = [];
+            var todosLowArray = [];
+            var todosData = {
+                'todosHighArray': todosHighArray,
+                'todosNormalArray': todosNormalArray,
+                'todosLowArray': todosLowArray
+            };
+
             var linksArray = [];
             var listsArray = [];
             var localPanelInitData = {
                 'notesArray': notesArray,
-                'todosArray': todosArray,
+                'todosData': todosData,
                 'linksArray': linksArray,
                 'listsArray': listsArray
             };
@@ -107,6 +114,22 @@
         } else {
             console.log("Key exist, loading data.");
             localPanelData = JSON.parse(localStorage.getItem("localPanelData"));
+
+            var version = localStorage.getItem("localPanelDataVersion");
+            if (version === null) {
+                localStorage.setItem("localPanelDataVersion", "0.0.1");
+
+                var todosHighArray = [];
+                var todosNormalArray = [];
+                var todosLowArray = [];
+                var todosData = {
+                    'todosHighArray': todosHighArray,
+                    'todosNormalArray': todosNormalArray,
+                    'todosLowArray': todosLowArray
+                };
+                localPanelData.todosData = todosData;
+                localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
+            }
         }
 
         console.log(localPanelData);
@@ -202,7 +225,7 @@
         function render_todos() {
             $('#todos-div').text('');
             $('#todos-div').append("<h4>To do:</h4>");
-            $.each(localPanelData.todosArray, function (index) {
+            $.each(localPanelData.todosData.todosHighArray, function (index) {
                 var priority_text = "";
                 if (this.todo_priority == "1") {
                     priority_text = "<span class=\"text-muted\">Low</span>";
@@ -233,7 +256,83 @@
                             ).append(
                                 $('<div>').attr('class', 'col-lg-2 col-sm-12 d-flex justify-content-center').append(
                                     $('<p>').attr('class', 'card-buttons').append(
-                                        '<i class="bi-clipboard-check todo-delete" alt="Delete Todo" data-todo-index="' + index + '"></i>'
+                                        '<i class="bi-clipboard-check todo-delete" alt="Delete Todo" data-todo-index="' + index + '" data-todo-priority="' + this.todo_priority + '"></i>'
+                                    )
+                                )
+                            )
+                        )
+                );
+            });
+            $.each(localPanelData.todosData.todosNormalArray, function (index) {
+                var priority_text = "";
+                if (this.todo_priority == "1") {
+                    priority_text = "<span class=\"text-muted\">Low</span>";
+                }
+                if (this.todo_priority == "2") {
+                    priority_text = "<span class=\"text-success\">Normal</span>";
+                }
+                if (this.todo_priority == "3") {
+                    priority_text = "<span class=\"text-danger\">High</span>";
+                }
+                $('#todos-div').append(
+                        $('<div>').attr('class', 'card border-success mb-3 note-card').append(
+                            $('<div>').attr('class', 'row').append(
+                                $('<div>').attr('class', 'card-body text-success col-lg-10 col-sm-12').append(
+                                    $('<h5>').attr('class', 'card-title').append(
+                                        this.new_todo_title
+                                    )
+                                ).append(
+                                    $('<p>').attr('class', 'card-text').append(
+                                        this.new_todo_content
+                                    )
+                                )
+                                .append(
+                                    $('<p>').attr('class', 'card-text').append(
+                                        'Priority: ' + priority_text
+                                    )
+                                )
+                            ).append(
+                                $('<div>').attr('class', 'col-lg-2 col-sm-12 d-flex justify-content-center').append(
+                                    $('<p>').attr('class', 'card-buttons').append(
+                                        '<i class="bi-clipboard-check todo-delete" alt="Delete Todo" data-todo-index="' + index + '" data-todo-priority="' + this.todo_priority + '"></i>'
+                                    )
+                                )
+                            )
+                        )
+                );
+            });
+            $.each(localPanelData.todosData.todosLowArray, function (index) {
+                var priority_text = "";
+                if (this.todo_priority == "1") {
+                    priority_text = "<span class=\"text-muted\">Low</span>";
+                }
+                if (this.todo_priority == "2") {
+                    priority_text = "<span class=\"text-success\">Normal</span>";
+                }
+                if (this.todo_priority == "3") {
+                    priority_text = "<span class=\"text-danger\">High</span>";
+                }
+                $('#todos-div').append(
+                        $('<div>').attr('class', 'card border-success mb-3 note-card').append(
+                            $('<div>').attr('class', 'row').append(
+                                $('<div>').attr('class', 'card-body text-success col-lg-10 col-sm-12').append(
+                                    $('<h5>').attr('class', 'card-title').append(
+                                        this.new_todo_title
+                                    )
+                                ).append(
+                                    $('<p>').attr('class', 'card-text').append(
+                                        this.new_todo_content
+                                    )
+                                )
+                                .append(
+                                    $('<p>').attr('class', 'card-text').append(
+                                        'Priority: ' + priority_text
+                                    )
+                                )
+                            ).append(
+                                $('<div>').attr('class', 'col-lg-2 col-sm-12 d-flex justify-content-center').append(
+                                    $('<p>').attr('class', 'card-buttons').append(
+                                        '<i class="bi-clipboard-check todo-delete" alt="Delete Todo" data-todo-index="' + index + '" data-todo-priority="' + this.todo_priority + '"></i>'
                                     )
                                 )
                             )
@@ -242,7 +341,17 @@
             });
             $('.todo-delete').on('click', function () {
                 var todo_index = $(this).data("todo-index");
-                localPanelData.todosArray.splice(todo_index, 1);
+                var todo_priority = $(this).data("todo-priority");
+                if (todo_priority == 3) {
+                    localPanelData.todosData.todosHighArray.splice(todo_index, 1);
+                }
+                if (todo_priority == 2) {
+                    localPanelData.todosData.todosNormalArray.splice(todo_index, 1);
+                }
+                if (todo_priority == 1) {
+                    localPanelData.todosData.todosLowArray.splice(todo_index, 1);
+                }
+                //localPanelData.todosArray.splice(todo_index, 1);
                 localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
                 render_main_elements();
             });
@@ -435,7 +544,18 @@
 
         $('#modal-btn-save-todo').on('click', function () {
             var new_todo_form_object = $("#new-todo-form").serializeObject();
-            localPanelData.todosArray.push(new_todo_form_object);
+            var todo_priority = $("#todo_priority").val();
+            console.log(todo_priority);
+            if (todo_priority == 3) {
+                localPanelData.todosData.todosHighArray.push(new_todo_form_object);
+            }
+            if (todo_priority == 2) {
+                localPanelData.todosData.todosNormalArray.push(new_todo_form_object);
+            }
+            if (todo_priority == 1) {
+                localPanelData.todosData.todosLowArray.push(new_todo_form_object);
+            }
+            //localPanelData.todosArray.push(new_todo_form_object);
             localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
             $('#newTodoModal').modal('hide');
             console.log(localPanelData);
@@ -553,3 +673,4 @@
 
 </body>
 </html>
+
