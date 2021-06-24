@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -184,11 +186,21 @@
             });
         });
         function render_main_elements() {
-            render_notes();
-            render_todos();
-            render_links();
+            $('#main-elements').empty();
+            var bootstrap_grid_class = get_bootstrap_grid_class();
+
+            render_notes(bootstrap_grid_class);
+            render_todos(bootstrap_grid_class);
+            render_links(bootstrap_grid_class);
+            how_many_arrays_has_content();
         }
-        function render_notes() {
+        function render_notes(bootstrap_grid_class) {
+            if (localPanelData.notesArray.length == 0) {
+                $('#notes-div').remove();
+                return;
+            }
+            $('#main-elements').append($('<div>').attr('id', 'notes-div').attr('class', 'col-sm-12 ' + bootstrap_grid_class));
+
             $('#notes-div').text('');
             $('#notes-div').append("<h4>Notes:</h4>");
             $.each(localPanelData.notesArray, function (index) {
@@ -222,7 +234,13 @@
                 render_main_elements();
             });
         }
-        function render_todos() {
+        function render_todos(bootstrap_grid_class) {
+            if (localPanelData.todosData.todosHighArray.length == 0 && localPanelData.todosData.todosNormalArray.length == 0 && localPanelData.todosData.todosLowArray.length == 0) {
+                $('#todos-div').remove();
+                return;
+            }
+            $('#main-elements').append($('<div>').attr('id', 'todos-div').attr('class', 'col-sm-12 ' + bootstrap_grid_class));
+
             $('#todos-div').text('');
             $('#todos-div').append("<h4>To do:</h4>");
             $.each(localPanelData.todosData.todosHighArray, function (index) {
@@ -355,8 +373,16 @@
                 localStorage.setItem("localPanelData", JSON.stringify(localPanelData));
                 render_main_elements();
             });
+
+
         }
-        function render_links() {
+        function render_links(bootstrap_grid_class) {
+            if (localPanelData.linksArray.length == 0) {
+                $('#links-div').remove();
+                return;
+            }
+            $('#main-elements').append($('<div>').attr('id', 'links-div').attr('class', 'col-sm-12 ' + bootstrap_grid_class));
+
             $('#links-div').text('');
             $('#links-div').append("<h4>Links:</h4>");
             $.each(localPanelData.linksArray, function (index) {
@@ -389,6 +415,35 @@
                 //console.log(localPanelData.notesArray);
             });
         }
+
+        function how_many_arrays_has_content() {
+            var count = 0;
+            if (localPanelData.notesArray.length > 0) {
+                count += 1;
+            }
+            if (localPanelData.todosData.todosHighArray.length > 0 || localPanelData.todosData.todosNormalArray.length > 0 || localPanelData.todosData.todosLowArray.length > 0) {
+                count += 1;
+            }
+            if (localPanelData.linksArray.length > 0) {
+                count += 1;
+            }
+
+            return count;
+        }
+        function get_bootstrap_grid_class() {
+            var array_content_count = how_many_arrays_has_content();
+            if (array_content_count == 3) {
+                return "col-lg-4";
+            }
+            if (array_content_count == 2) {
+                return "col-lg-6";
+            }
+            if (array_content_count == 1) {
+                return "col-lg-12";
+            } else {
+                return "col-lg-12";
+            }
+        }
     </script>
 </head>
 <body>
@@ -417,19 +472,9 @@
             <script>
                 $(document).ready(function () {
                     console.log('rendering main elements');
-                    console.log('rendering notes');
                     render_main_elements();
                 });
             </script>
-            <div id="notes-div" class="col-lg-4 col-sm-12">
-
-            </div>
-            <div id="todos-div" class="col-lg-4 col-sm-12">
-
-            </div>
-            <div id="links-div" class="col-lg-4 col-sm-12">
-
-            </div>
         </div>
     </main>
 
@@ -673,4 +718,3 @@
 
 </body>
 </html>
-
