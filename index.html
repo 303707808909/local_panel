@@ -390,20 +390,23 @@
             $.each(localPanelData.linksArray, function (index) {
                 $('#links-div').append(
                         $('<div>').attr('class', 'card border-secondary note-card').append(
-                            $('<div>').attr('class', 'card-body text-secondary').append(
-                                $('<h5>').attr('class', 'card-title').append(
-                                    $('<a>').attr('href', this.new_link_url).attr('target', '_blank').attr('class', 'card-link').append(
-                                        this.new_link_title
+                            $('<div>').attr('class', 'row').append(
+                                $('<div>').attr('class', 'card-body text-secondary col-lg-10 col-sm-12').append(
+                                    $('<h5>').attr('class', 'card-title').append(
+                                        $('<a>').attr('href', this.new_link_url).attr('target', '_blank').attr('class', 'card-link').append(
+                                            this.new_link_title
+                                        )
+                                    )
+                                ).append(
+                                    $('<p>').attr('class', 'card-text').append(
+                                        this.new_link_description
                                     )
                                 )
                             ).append(
-                                $('<p>').attr('class', 'card-text').append(
-                                    this.new_link_description
-                                )
-                            )
-                            .append(
-                                $('<p>').attr('class', 'card-bottom').append(
-                                    '<i class="bi-trash link-delete" alt="Delete Link" data-link-index="' + index + '"></i>'
+                                $('<div>').attr('class', 'col-lg-2 col-sm-12 d-flex justify-content-center').append(
+                                    $('<p>').attr('class', 'card-bottom').append(
+                                        '<i class="bi-trash link-delete" alt="Delete Link" data-link-index="' + index + '"></i>'
+                                    )
                                 )
                             )
                         )
@@ -716,7 +719,6 @@
             </div>
         </div>
     </div>
-
 
 </body>
 </html>
