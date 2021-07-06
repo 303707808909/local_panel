@@ -164,8 +164,15 @@
 
 
             if (localStorage.getItem("showWelcomeModal") === null || localStorage.getItem("showWelcomeModal") == "true") {
-                $('#welcomeModal').modal('show');
+                $('#WelcomeDiv').show();
+            } else {
+                $('#WelcomeDiv').hide();
             }
+
+            $('#welcomeDismiss').on('click', function () {
+                localStorage.setItem("showWelcomeModal", "false");
+                $('#WelcomeDiv').hide();
+            });
 
             $('#btn-new-note').on('click', function () {
                 $('#new_note_title').val('');
@@ -464,6 +471,20 @@
         </div>
     </header>
     <main>
+        <div class="alert alert-primary" style="margin-top:50px;padding-top:30px;width:90%;margin:0 auto;" id="WelcomeDiv">
+            <div>
+                <p>
+                    <strong>local_panel</strong> is an easy and simple to use application, to help you keep your notes, memos, tasks, links, anything important.<br />
+                    No account required, nothing is saved in a database, everything is kept local to the device you are using. <br />
+                    Safe and secure, your data is entirely contained to your device.<br />
+                    This also works offline!
+                </p>
+            </div>
+            <div style="text-align:center;">
+                <p>Get started right away<br /><i class="bi bi-arrow-down"></i></p>
+            </div>
+            <div style="float:right;">Don't show this again <input id="welcomeDismiss" type="checkbox" /></div>
+        </div>
         <div class="container-fluid text-center" style="margin-top:25px;">
             <h5>New:</h5>
             <div class="btn-group" role="group" aria-label="Basic example">
@@ -492,34 +513,6 @@
                 </div>
                 <div class="modal-body">
                     Sorry your browser is not supported. You need a modern browser with LocalStorage support.
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <script>
-    $(document).ready(function () {
-        $('#welcomeModalDismiss').on('click', function () {
-            localStorage.setItem("showWelcomeModal", "false");
-            $('#welcomeModal').modal('hide');
-        });
-    });
-    </script>
-    <div class="modal" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabelLabel" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="welcomeModalLabelLabel">Welcome.</h5>
-                </div>
-                <div class="modal-body">
-                    <p><strong>local_panel</strong> is an easy and simple to use application, to help you keep your notes, memos, tasks, links, anything important.</p>
-                    <p>No account required, nothing is saved in a database, everything is kept local to the device you are using. (<a href="#">Read more on this</a>)</p>
-                    <p>Safe and secure, your data is entirely contained to your device.</p>
-                    <p>This also works offline!</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="welcomeModalDismiss">OK, Get Started <i class="bi bi-check-circle"></i></button>
                 </div>
             </div>
         </div>
